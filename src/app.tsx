@@ -1,7 +1,10 @@
+import { WindowStage } from "./components/stage";
 
 function App() {
   return (
-    <div className="App">1243</div>
+    <div className="App">
+      <WindowStage width={window.innerWidth} height={window.innerHeight} />
+    </div>
   );
 }
 
