@@ -6,15 +6,15 @@ const height = 500;
 
 const robotController = new RobotController({ width, height });
 
+const randomNewPosition = () => {
+  return {
+    x: Math.random() * width,
+    y: Math.random() * height,
+  };
+};
+
 const getData = async () => {
-  const position = [
-    { x: 100, y: 100 },
-    { x: 300, y: 50 },
-    { x: 300, y: 300 },
-    { x: 400, y: 300 },
-    { x: 200, y: 50 },
-  ];
-  return position;
+  return Array.from({ length: 10 }).map(randomNewPosition);
 };
 
 const createButton = (opts: { text: string; clickHandle: () => void }) => {

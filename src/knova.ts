@@ -38,7 +38,7 @@ export class RobotController {
   private robotHeight = 50;
   private robot: Konva.Image | null = null;
   private stage: Konva.Stage;
-  private path: Konva.Path;
+  private path: Konva.Path | null = null;
   private positions: Position[] = [];
   private animHandle: Konva.Animation | null = null;
   private robotLayer: Konva.Layer | null = null; // 机器人运动的那一层
@@ -63,7 +63,7 @@ export class RobotController {
       this.createRobot();
       return;
     }
-    this.path.setAttrs({ data: createPath(this.positions) });
+    this.path!.setAttrs({ data: createPath(this.positions) });
     this.tryWalkingToNext();
   }
   private createWalkingPaths() {
@@ -118,6 +118,7 @@ export class RobotController {
           this.fromIndex += 1;
           this.tryWalkingToNext(); // 动画完了，就走下一个点
         },
+        speed: 0.6, // 传 speed 就是匀速运行
       }
     );
     this.animHandle.start();
@@ -128,10 +129,12 @@ export class RobotController {
     opts?: {
       totalTime?: number; // 移动耗时总时长，ms
       onFinish?: () => void;
+      speed?: number;
     }
   ) {
-    const totalTime = opts?.totalTime || 1000;
     const pathLen = path.getLength();
+    const speed = opts?.speed;
+    const totalTime = speed ? pathLen / speed : opts?.totalTime || 1000;
     const { robotWidth, robotHeight, robot } = this;
     let total = 0; // 自己计算的目的是为了可以支持到暂停运动
     const animation = new Konva.Animation(function (frame) {
