@@ -1,6 +1,11 @@
-import { main } from "./knova";
+import { RobotController } from "./knova";
 import "./base.css";
-const handle = main(window.innerWidth, 500);
+
+const width = window.innerWidth;
+const height = 500;
+
+const robotController = new RobotController({ width, height });
+
 const getData = async () => {
   const position = [
     { x: 100, y: 100 },
@@ -12,31 +17,66 @@ const getData = async () => {
   return position;
 };
 
-const createZoom = () => {
-  const zoomIn = document.createElement("button");
-  zoomIn.innerText = "放大";
-  document.body.append(zoomIn);
-  zoomIn.className = "button";
-  zoomIn.addEventListener("click", () => {
-    handle.setScale(handle.getScale() + 0.2);
-  });
-
-  const zoomOut = document.createElement("button");
-  zoomOut.innerText = "缩小";
-  document.body.append(zoomOut);
-  zoomOut.className = "button";
-  zoomOut.addEventListener("click", () => {
-    handle.setScale(handle.getScale() - 0.2);
-  });
-
-  const loadData = document.createElement("button");
-  loadData.innerText = "加载数据";
-  document.body.append(loadData);
-  loadData.className = "button";
-  loadData.addEventListener("click", () => {
-    getData().then((positions) => {
-      handle.drawRotbotRunWithPosition(positions);
-    });
-  });
+const createButton = (opts: { text: string; clickHandle: () => void }) => {
+  const button = document.createElement("button");
+  button.innerText = opts.text;
+  button.className = "button";
+  button.addEventListener("click", opts.clickHandle);
+  return button;
 };
-createZoom();
+
+const createOperateBar = () => {
+  document.body.append(
+    createButton({
+      text: "放大",
+      clickHandle: () => {
+        robotController.setScale(robotController.getScale() + 0.2);
+      },
+    })
+  );
+
+  document.body.append(
+    createButton({
+      text: "缩小",
+      clickHandle: () => {
+        robotController.setScale(robotController.getScale() - 0.2);
+      },
+    })
+  );
+
+  document.body.append(
+    createButton({
+      text: "加载数据",
+      clickHandle: () => {
+        getData().then((positions) => {
+          positions.map((position) => {
+            robotController.insertPosition(position);
+          });
+        });
+      },
+    })
+  );
+
+  document.body.append(
+    createButton({
+      text: "插入一个新位置",
+      clickHandle: () => {
+        robotController.insertPosition({
+          x: Math.random() * width,
+          y: Math.random() * height,
+        });
+      },
+    })
+  );
+
+  document.body.append(
+    createButton({
+      text: "reset",
+      clickHandle: () => {
+        robotController.reset();
+      },
+    })
+  );
+};
+
+createOperateBar();
